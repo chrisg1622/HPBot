@@ -4,10 +4,11 @@ from tensorflow.python import keras
 
 class Encoder(keras.layers.Layer):
 
-    def __init__(self, vocabulary, embedding_dimension, *args, **kwargs):
+    def __init__(self, vocabulary, embedding_dimension, regularizer=0.01, *args, **kwargs):
         super(Encoder, self).__init__(*args, **kwargs)
         self.vocabulary = vocabulary
         self.embedding_dimension = embedding_dimension
+        self.regularizer = regularizer
         self.vocab_table = None
         self.embeddings = None
         self.lstm = None
@@ -18,7 +19,12 @@ class Encoder(keras.layers.Layer):
         self.vocab_table = tf.lookup.StaticHashTable(initializer=table_initializer, default_value=0, name='vocab_table')
         self.embeddings = keras.layers.Embedding(input_dim=len(self.vocabulary), output_dim=self.embedding_dimension, name='Embeddings')
         self.lstm = keras.layers.LSTM(units=self.embedding_dimension, name='stacked_lstm')
-        self.output_layer = keras.layers.Dense(units=len(self.vocabulary), activation='sigmoid')
+        self.output_layer = keras.layers.Dense(
+            units=len(self.vocabulary),
+            use_bias=False,
+            activation='softmax',
+            kernel_regularizer=keras.regularizers.l2(l=self.regularizer)
+        )
 
     def call(self, inputs, *args, **kwargs):
         token_sequences = inputs
