@@ -13,12 +13,12 @@ class NovelSequenceGenerator:
     def get_chapter_ngrams(self, chapter, n):
         tokens = self.get_chapter_tokens(chapter=chapter)
         input_list = [self.START_CHAR] * (n - 1) + tokens + [self.END_CHAR]
-        return zip(*[input_list[i:] for i in range(n)])
+        return list(zip(*[input_list[i:] for i in range(n)]))
 
     def get_novel_ngrams(self, novel, n):
         return [
             ngram
-            for chapter in novel.chapters
+            for chapter in tqdm(novel.chapters)
             for ngram in self.get_chapter_ngrams(chapter=chapter, n=n)
         ]
 
