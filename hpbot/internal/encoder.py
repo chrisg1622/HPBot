@@ -32,3 +32,10 @@ class Encoder(keras.layers.Layer):
         token_embeddings = self.embeddings(inputs=token_id_sequences)
         lstm_output = self.lstm(inputs=token_embeddings)
         return self.output_layer(inputs=lstm_output)
+
+    def get_config(self):
+        config = super(Encoder, self).get_config()
+        config['vocabulary'] = self.vocabulary
+        config['embedding_dimension'] = self.embedding_dimension
+        config['regularizer'] = self.regularizer
+        return config
