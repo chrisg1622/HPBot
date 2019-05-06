@@ -5,7 +5,7 @@ from hpbot.store.novel_sequence_generator import NovelSequenceGenerator
 
 class HPBot(keras.Model):
 
-    START_TOKEN = NovelSequenceGenerator.START_CHAR
+    START_TOKEN = NovelSequenceGenerator.START_TOKEN
 
     def __init__(self, encoder, sequence_size, *args, **kwargs):
         super(HPBot, self).__init__(*args, **kwargs)
