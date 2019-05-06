@@ -4,16 +4,16 @@ from tqdm.auto import tqdm
 
 class NovelSequenceGenerator:
 
-    OOV_CHAR = '<OOV>'
-    START_CHAR = '<START>'
-    END_CHAR = '<END>'
+    OOV_TOKEN = '<OOV>'
+    START_TOKEN = '<START>'
+    END_TOKEN = '<END>'
 
     def __init__(self, tokenizer):
         self.tokenizer = tokenizer
 
     def get_chapter_ngrams(self, chapter, n):
         tokens = self.get_chapter_tokens(chapter=chapter)
-        input_list = [self.START_CHAR] * (n - 1) + tokens + [self.END_CHAR]
+        input_list = [self.START_TOKEN] * (n - 1) + tokens + [self.END_TOKEN]
         return list(zip(*[input_list[i:] for i in range(n)]))
 
     def get_chapter_tokens(self, chapter):
@@ -30,7 +30,7 @@ class NovelSequenceGenerator:
         ]
 
     def get_novel_vocabulary(self, novel):
-        return [self.OOV_CHAR, self.START_CHAR, self.END_CHAR] + sorted(set(self.get_novel_tokens(novel=novel)))
+        return [self.OOV_TOKEN, self.START_TOKEN, self.END_TOKEN] + sorted(set(self.get_novel_tokens(novel=novel)))
 
     def get_novel_training_ngrams(self, novel, n):
         sequences = self.get_novel_ngrams(novel, n=n+1)
