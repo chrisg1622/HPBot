@@ -4,7 +4,7 @@ from tensorflow.python import keras
 
 class Encoder(keras.layers.Layer):
 
-    def __init__(self, vocabulary, embedding_dimension, regularizer=0.01, *args, **kwargs):
+    def __init__(self, vocabulary, embedding_dimension, regularizer=1.0, *args, **kwargs):
         super(Encoder, self).__init__(*args, **kwargs)
         self.vocabulary = vocabulary
         self.embedding_dimension = embedding_dimension
@@ -17,7 +17,7 @@ class Encoder(keras.layers.Layer):
     def build(self, input_shape):
         table_initializer = tf.lookup.KeyValueTensorInitializer(keys=self.vocabulary, values=list(range(len(self.vocabulary))), key_dtype=tf.string, value_dtype=tf.int32, name='vocab_table_init')
         self.vocab_table = tf.lookup.StaticHashTable(initializer=table_initializer, default_value=0, name='vocab_table')
-        self.embeddings = keras.layers.Embedding(input_dim=len(self.vocabulary), output_dim=self.embedding_dimension, name='Embeddings')
+        self.embeddings = keras.layers.Embedding(input_dim=len(self.vocabulary), output_dim=self.embedding_dimension, mask_zero=True, name='Embeddings')
         self.lstm = keras.layers.LSTM(units=self.embedding_dimension, name='stacked_lstm')
         self.output_layer = keras.layers.Dense(
             units=len(self.vocabulary),
