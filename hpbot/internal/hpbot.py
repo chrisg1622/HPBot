@@ -25,15 +25,30 @@ class HPBot(keras.Model):
     def get_target_indices(self, tokens):
         return np.array([self.vocabulary.get(tok, 0) for tok in tokens])
 
-    def sample_next_word(self, words):
+    def sample_next_word(self, words, greedy=False):
         input_seq = np.array([[self.START_TOKEN] * (self.sequence_size - len(words)) + words])
         softmaxed_logits = self.call(inputs=input_seq)
-        return self.encoder.vocabulary[np.argmax(softmaxed_logits[0])]
+        if greedy:
+            return self.encoder.vocabulary[np.argmax(softmaxed_logits[0])]
+        return np.random.choice(self.encoder.vocabulary, size=1, p=softmaxed_logits.numpy()[0])[0]
 
-    def sample_sequence(self, words=None, size=20):
+    def sample_sequence(self, words=None, size=20, greedy=False):
         sample = words or [self.START_TOKEN]
         for i in range(size):
             words = sample if len(sample) < self.sequence_size else sample[-self.sequence_size:]
-            sample.append(self.sample_next_word(words=words))
-        return sample
+            sample.append(self.sample_next_word(words=words, greedy=greedy))
+        return self.format_sequence(sample)
+
+    def format_sequence(self, sequence):
+        if self.START_TOKEN in sequence:
+            sequence.remove(self.START_TOKEN)
+        formatted_sequence = sequence[0]
+        for token in sequence[1:]:
+            last_char = formatted_sequence[-1]
+            if not(token[0].isalpha()):
+                if last_char.isalpha():
+                    formatted_sequence += token
+                    continue
+            formatted_sequence += f' {token}'
+        return formatted_sequence
 
