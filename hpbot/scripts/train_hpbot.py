@@ -14,6 +14,7 @@ from hpbot.store.novel_sequence_generator import NovelSequenceGenerator
 txt_novel_retriever = TxtNovelRetriever()
 spacy_tokenizer = SpacyTokenizer()
 sequence_generator = NovelSequenceGenerator(tokenizer=spacy_tokenizer)
+repository_path = '/Users/cgeorge/Git/HPBot'
 model_name = 'HPBot'
 optimizer = tf.optimizers.Adam(learning_rate=0.007)
 loss_function = tf.losses.SparseCategoricalCrossentropy(from_logits=False)
@@ -21,9 +22,9 @@ metrics = [keras.metrics.SparseCategoricalAccuracy()]
 
 
 def main(sequence_size=4, batch_size=64, epochs=5, novel_number=1, restore_model=True):
-    save_dir = f'/Users/cgeorge/Git/models/HPBot/novel{novel_number}'
-    tensorboard_dir = f'/Users/cgeorge/Git/tensorboard/HPBot/novel{novel_number}'
-    novel, lines = txt_novel_retriever.retrieve_novel('/Users/cgeorge/Git/Data/HPBot/HP1.txt')
+    save_dir = f'{repository_path}/models/novel{novel_number}'
+    tensorboard_dir = f'{repository_path}/tensorboard/novel{novel_number}'
+    novel, lines = txt_novel_retriever.retrieve_novel(f'{repository_path}/Data/HP{novel_number}.txt')
     if restore_model:
         encoder = Encoder.from_config(config=json.load(open(f'{save_dir}/Encoder.json', 'r')))
     else:
