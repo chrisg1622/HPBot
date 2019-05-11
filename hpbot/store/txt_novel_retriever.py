@@ -32,4 +32,4 @@ class TxtNovelRetriever:
             else:
                 text += ' ' * int(len(text) > 2) + line
         chapters.append(Chapter(title=title, text=text))
-        return Novel(title=novel_title, chapters=chapters), lines
+        return Novel(title=novel_title, chapters=chapters)

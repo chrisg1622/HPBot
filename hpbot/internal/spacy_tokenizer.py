@@ -9,3 +9,6 @@ class SpacyTokenizer:
 
     def tokenize(self, text):
         return [token.text for token in self.tagger(text)]
+
+    def get_sentence_tokens(self, text):
+        return [[token.text for token in sent] for sent in self.tagger(text).sents]

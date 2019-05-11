@@ -13,7 +13,7 @@ class SequenceSamplingCallback(Callback):
     def print_sample(self):
         for i in range(self.samples):
             sample = self.model.sample_sequence(size=self.sequence_length, greedy=self.greedy_sequence)
-            print(f'{self.name} {i}: {sample}')
+            print(f'\n{self.name} {i}: {sample}\n')
 
     def on_train_begin(self, logs=None):
         self.print_sample()

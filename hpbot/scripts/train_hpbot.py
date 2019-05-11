@@ -21,25 +21,19 @@ loss_function = tf.losses.SparseCategoricalCrossentropy(from_logits=False)
 metrics = [keras.metrics.SparseCategoricalAccuracy()]
 
 
-def main(sequence_size=4, batch_size=64, epochs=5, novel_number=1, restore_model=True):
+def main(sequence_size=5, batch_size=64, epochs=50, novel_number=1, restore_model=True):
     save_dir = f'{repository_path}/models/novel{novel_number}'
     tensorboard_dir = f'{repository_path}/tensorboard/novel{novel_number}'
-    novel, lines = txt_novel_retriever.retrieve_novel(f'{repository_path}/Data/HP{novel_number}.txt')
+    novel = txt_novel_retriever.retrieve_novel(f'{repository_path}/Data/HP{novel_number}.txt')
     if restore_model:
         encoder = Encoder.from_config(config=json.load(open(f'{save_dir}/Encoder.json', 'r')))
     else:
-        vocabulary = sequence_generator.get_novel_vocabulary(novel=novel)
+        vocabulary = sequence_generator.get_novel_vocabulary(novels=novels)
         encoder = Encoder(vocabulary=vocabulary, embedding_dimension=300)
     hp_bot = HPBot(encoder=encoder, sequence_size=sequence_size)
 
-    token_sequences, target_tokens = sequence_generator.get_novel_training_ngrams(novel=novel, n=sequence_size)
+    token_sequences, target_tokens = sequence_generator.get_novel_training_ngrams(novels=novels, n=sequence_size)
     target_indices = hp_bot.get_target_indices(tokens=target_tokens)
-    i=0
-    for a,b,c in zip(token_sequences, target_tokens, target_indices):
-        print(a,b,c)
-        i+=1
-        if i == 1000:
-            return
     hp_bot.compile(optimizer=optimizer, loss=loss_function, metrics=metrics)
     _ = hp_bot(token_sequences[:1])
     if restore_model:
