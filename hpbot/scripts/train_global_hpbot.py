@@ -29,15 +29,14 @@ vocabulary = json.load(open(f'{repository_path}/models/word2vec_vocab.json'))
 embeddings = np.load(f'{repository_path}/models/word2vec_vectors.npy')
 
 
-def main(batch_size=64, epochs=1, batches_per_epoch=200, restore_model=False):
-    sentence_tokens = json.load(open(f'{repository_path}/data/sentence_tokens.json', 'r'))[:batch_size * batches_per_epoch]
+def main(batch_size=32, epochs=1, batches_per_epoch=200, restore_model=False):
+    sentence_tokens = json.load(open(f'{repository_path}/data/sentence_tokens.json', 'r'))
     encoder = Encoder(vocabulary=vocabulary, hidden_size=256, pretrained_embeddings=embeddings)
     hp_bot = HPBot(encoder=encoder)
-    input_sequences, target_sequences = sequence_generator.get_training_sequences(sentence_tokens=sentence_tokens)
-    print(f'{len(input_sequences)} samples, max length: {input_sequences.shape[1]}')
-    target_indices = hp_bot.get_sentence_token_indices(sentence_tokens=target_sequences)
+    print(f'{len(sentence_tokens)} sentences')
+    input_generator = sequence_generator.get_training_sequence_generator(sentence_tokens=sentence_tokens, target_wrapper_fn=hp_bot.get_sentence_token_indices)
     hp_bot.compile(optimizer=optimizer, loss=loss_function, metrics=metrics)
-    _ = hp_bot(input_sequences[:1])
+    _ = hp_bot(np.array([['', '', '']]))
     if restore_model:
         hp_bot.load_weights(filepath=f'{save_dir}/{model_name}.h5')
     callbacks = [
@@ -47,8 +46,7 @@ def main(batch_size=64, epochs=1, batches_per_epoch=200, restore_model=False):
         SequenceSamplingCallback(max_sequence_length=30, greedy_sequence=True, name='greedy sample')
     ]
     hp_bot.fit(
-        x=input_sequences,
-        y=target_indices,
+        x=input_generator,
         batch_size=batch_size,
         epochs=epochs,
         steps_per_epoch=batches_per_epoch,
