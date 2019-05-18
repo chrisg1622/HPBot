@@ -68,3 +68,6 @@ class NovelSequenceGenerator:
         input_sequences = np.array([self._pad_sentence(sentence=tokens[:-1], max_size=max_sequence_length) for tokens in sentence_tokens])
         output_sequences = np.array([self._pad_sentence(sentence=tokens[1:], max_size=max_sequence_length) for tokens in sentence_tokens])
         return input_sequences, output_sequences
+
+    def get_training_sequence_generator(self, training_sequences, batch_size):
+        pass

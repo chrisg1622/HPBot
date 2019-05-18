@@ -1,5 +1,5 @@
-from hpbot.datamodel.chapter import Chapter
-from hpbot.datamodel.novel import Novel
+from hpbot.data.chapter import Chapter
+from hpbot.data.novel import Novel
 
 
 class TxtNovelRetriever:

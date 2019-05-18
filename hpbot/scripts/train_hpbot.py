@@ -2,11 +2,11 @@ import fire
 import json
 import tensorflow as tf
 from tensorflow.python import keras
-from hpbot.internal.spacy_tokenizer import SpacyTokenizer
-from hpbot.internal.encoder import Encoder
-from hpbot.internal.hpbot import HPBot
-from hpbot.internal.callbacks.sequence_sampling import SequenceSamplingCallback
-from hpbot.internal.callbacks.model_checkpoint import ModelCheckpointCallback
+from hpbot.model.spacy_tokenizer import SpacyTokenizer
+from hpbot.model.encoder import Encoder
+from hpbot.model.hpbot import HPBot
+from hpbot.model.callbacks.sequence_sampling import SequenceSamplingCallback
+from hpbot.model.callbacks.model_checkpoint import ModelCheckpointCallback
 from hpbot.store.txt_novel_retriever import TxtNovelRetriever
 from hpbot.store.novel_sequence_generator import NovelSequenceGenerator
 
