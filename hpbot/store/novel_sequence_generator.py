@@ -69,5 +69,7 @@ class NovelSequenceGenerator:
         output_sequences = np.array([self._pad_sentence(sentence=tokens[1:], max_size=max_sequence_length) for tokens in sentence_tokens])
         return input_sequences, output_sequences
 
-    def get_training_sequence_generator(self, training_sequences, batch_size):
-        pass
+    def get_training_sequence_generator(self, sentence_tokens, target_wrapper_fn):
+        for sents in sentence_tokens:
+            input_sequences, output_sequences = self.get_training_sequences(sentence_tokens=[sents])
+            yield input_sequences, target_wrapper_fn(output_sequences)
