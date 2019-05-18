@@ -28,11 +28,11 @@ def main(sequence_size=5, batch_size=64, epochs=50, novel_number=1, restore_mode
     if restore_model:
         encoder = Encoder.from_config(config=json.load(open(f'{save_dir}/Encoder.json', 'r')))
     else:
-        vocabulary = sequence_generator.get_novel_vocabulary(novels=novels)
+        vocabulary = sequence_generator.get_novel_vocabulary(novels=[novel])
         encoder = Encoder(vocabulary=vocabulary, embedding_dimension=300)
     hp_bot = HPBot(encoder=encoder, sequence_size=sequence_size)
 
-    token_sequences, target_tokens = sequence_generator.get_novel_training_ngrams(novels=novels, n=sequence_size)
+    token_sequences, target_tokens = sequence_generator.get_novel_training_ngrams(novels=[novel], n=sequence_size)
     target_indices = hp_bot.get_target_indices(tokens=target_tokens)
     hp_bot.compile(optimizer=optimizer, loss=loss_function, metrics=metrics)
     _ = hp_bot(token_sequences[:1])
