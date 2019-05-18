@@ -1,14 +1,16 @@
 import inspect
 import json
+import pickle
 from tensorflow.python import keras
 
 
 class ModelCheckpointCallback(keras.callbacks.Callback):
 
-    def __init__(self, model_directory, model_name, verbose=0):
+    def __init__(self, model_directory, model_name, as_pickle=False, verbose=0):
         super(ModelCheckpointCallback, self).__init__()
         self.model_directory = model_directory
         self.model_name = model_name
+        self.as_pickle = as_pickle
         self.verbose = verbose
         self.model_filepath = f'{self.model_directory}/{self.model_name}.h5'
 
@@ -19,8 +21,11 @@ class ModelCheckpointCallback(keras.callbacks.Callback):
     def on_train_begin(self, logs=None):
         for name, value in self.model_params.items():
             if isinstance(value, keras.layers.Layer):
-                path = f'{self.model_directory}/{name}.json'
-                json.dump(value.get_config(), open(path, 'w'))
+                path = f'{self.model_directory}/{name}.{"pkl" if self.as_pickle else "json"}'
+                if self.as_pickle:
+                    pickle.dump(value.get_config(), open(path, 'wb'))
+                else:
+                    json.dump(value.get_config(), open(path, 'w'))
                 if self.verbose > 0:
                     print(f'Saved layer params to {path}')
 

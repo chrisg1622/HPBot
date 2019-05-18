@@ -1,4 +1,5 @@
 import numpy as np
+import tensorflow as tf
 from tensorflow.python import keras
 from hpbot.store.novel_sequence_generator import NovelSequenceGenerator
 
@@ -6,11 +7,11 @@ from hpbot.store.novel_sequence_generator import NovelSequenceGenerator
 class HPBot(keras.Model):
 
     START_TOKEN = NovelSequenceGenerator.START_TOKEN
+    END_TOKEN = NovelSequenceGenerator.END_TOKEN
 
-    def __init__(self, encoder, sequence_size, *args, **kwargs):
+    def __init__(self, encoder, *args, **kwargs):
         super(HPBot, self).__init__(*args, **kwargs)
         self.encoder = encoder
-        self.sequence_size = sequence_size
         self._vocabulary = None
 
     @property
@@ -22,21 +23,32 @@ class HPBot(keras.Model):
     def call(self, inputs, *args, **kwargs):
         return self.encoder(inputs)
 
+    def sample_next_word(self, tokens, top_k=3, greedy=False):
+        sentence_token_softmaxed_logits = self.call(inputs=np.array([tokens]), training=False)
+        top_logits, top_indices = tf.math.top_k(input=sentence_token_softmaxed_logits[0, -1, :], k=top_k)
+        if greedy:
+            return self.encoder.vocabulary[top_indices[0].numpy()]
+        softmaxed_top_values = tf.nn.softmax(logits=top_logits)
+        top_words = [self.encoder.vocabulary[k] for k in top_indices.numpy()]
+        return np.random.choice(top_words, size=1, p=softmaxed_top_values.numpy())[0]
+
     def get_target_indices(self, tokens):
         return np.array([self.vocabulary.get(tok, 0) for tok in tokens])
 
-    def sample_next_word(self, words, greedy=False):
-        input_seq = np.array([[self.START_TOKEN] * (self.sequence_size - len(words)) + words])
-        softmaxed_logits = self.call(inputs=input_seq)
-        if greedy:
-            return self.encoder.vocabulary[np.argmax(softmaxed_logits[0])]
-        return np.random.choice(self.encoder.vocabulary, size=1, p=softmaxed_logits.numpy()[0])[0]
+    def get_sentence_token_indices(self, sentence_tokens):
+        return np.array([
+            [self.vocabulary.get(tok, 0) for tok in sentence]
+            for sentence in sentence_tokens
+        ])
 
-    def sample_sequence(self, words=None, size=20, greedy=False):
+    def sample_sequence(self, words=None, greedy=False, max_sample_length=50):
         sample = words or [self.START_TOKEN]
-        for i in range(size):
-            words = sample if len(sample) < self.sequence_size else sample[-self.sequence_size:]
-            sample.append(self.sample_next_word(words=words, greedy=greedy))
+        last_word = sample[-1]
+        while last_word != self.END_TOKEN:
+            last_word = self.sample_next_word(tokens=sample, greedy=greedy)
+            sample.append(last_word)
+            if len(sample) == max_sample_length:
+                break
         return self.format_sequence(sample)
 
     def format_sequence(self, sequence):
