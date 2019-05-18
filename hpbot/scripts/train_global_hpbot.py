@@ -7,7 +7,6 @@ from hpbot.model.spacy_tokenizer import SpacyTokenizer
 from hpbot.model.encoder import Encoder
 from hpbot.model.hpbot import HPBot
 from hpbot.model.custom_loss import CustomLoss
-from hpbot.model.custom_metric import SparseCategoricalAccuracy
 from hpbot.model.callbacks.sequence_sampling import SequenceSamplingCallback
 from hpbot.model.callbacks.model_checkpoint import ModelCheckpointCallback
 from hpbot.store.txt_novel_retriever import TxtNovelRetriever
@@ -21,7 +20,7 @@ repository_path = '/Users/cgeorge/Git/HPBot'
 model_name = 'HPBot'
 optimizer = tf.optimizers.Adam(learning_rate=0.007)
 loss_function = CustomLoss()
-metrics = []#[SparseCategoricalAccuracy()]
+metrics = []
 
 save_dir = f'{repository_path}/models/global'
 tensorboard_dir = f'{repository_path}/tensorboard/global'
