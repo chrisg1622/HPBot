@@ -33,7 +33,7 @@ vocabulary = json.load(open(f'{repository_path}/models/word2vec_vocab.json'))
 embeddings = np.load(f'{repository_path}/models/word2vec_vectors.npy')
 
 
-def main(batch_size=64, epochs=3, batches_per_epoch=None, restore_model=True):
+def main(batch_size=128, epochs=30, batches_per_epoch=None, restore_model=True):
     sentence_tokens = json.load(open(f'{repository_path}/data/sentence_tokens.json', 'r'))
     encoder = Encoder(vocabulary=vocabulary, hidden_size=512, pretrained_embeddings=embeddings)
     hp_bot = HPBot(encoder=encoder)
