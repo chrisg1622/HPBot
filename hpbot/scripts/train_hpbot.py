@@ -27,7 +27,7 @@ loss_function = CustomLoss()
 metrics = []
 logger = Logger(name='HPBot', file_path=f'{repository_path}/training.log')
 
-save_dir = f'{repository_path}/models/global'
+save_dir = f'{repository_path}/models/hpbot'
 tensorboard_dir = f'{repository_path}/tensorboard/global'
 vocabulary = json.load(open(f'{repository_path}/models/word2vec_vocab.json'))
 embeddings = np.load(f'{repository_path}/models/word2vec_vectors.npy')
