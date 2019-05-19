@@ -1,7 +1,6 @@
 import fire
 import json
-import sys
-sys.path.insert(0, '../../')
+import os
 import numpy as np
 import tensorflow as tf
 from tensorflow.python import keras
@@ -19,7 +18,7 @@ from hpbot.store.novel_sequence_generator import NovelSequenceGenerator
 txt_novel_retriever = TxtNovelRetriever()
 spacy_tokenizer = SpacyTokenizer()
 sequence_generator = NovelSequenceGenerator(tokenizer=spacy_tokenizer)
-repository_path = '/Users/cgeorge/Git/HPBot'
+repository_path = os.environ.get('HPBOT_ROOT', '/Users/cgeorge/Git/HPBot')
 model_name = 'HPBot'
 optimizer = tf.optimizers.Adam(learning_rate=0.007)
 loss_function = CustomLoss()
