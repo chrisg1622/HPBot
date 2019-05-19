@@ -41,11 +41,11 @@ class HPBot(keras.Model):
             for sentence in sentence_tokens
         ])
 
-    def sample_sequence(self, words=None, greedy=False, max_sample_length=50):
+    def sample_sequence(self, words=None, greedy=False, max_sample_length=50, top_k=3):
         sample = words or [self.START_TOKEN]
         last_word = sample[-1]
         while last_word != self.END_TOKEN:
-            last_word = self.sample_next_word(tokens=sample, greedy=greedy)
+            last_word = self.sample_next_word(tokens=sample, greedy=greedy, top_k=top_k)
             sample.append(last_word)
             if len(sample) == max_sample_length:
                 break
