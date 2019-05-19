@@ -1,8 +1,10 @@
 import fire
 import json
 import os
+import sys
 import numpy as np
 import tensorflow as tf
+sys.path.insert(0, '../../')
 from tensorflow.python import keras
 from hpbot.model.spacy_tokenizer import SpacyTokenizer
 from hpbot.model.encoder import Encoder
