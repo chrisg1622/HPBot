@@ -6,4 +6,4 @@ class Novel:
         self.chapters = chapters
 
     def __repr__(self):
-        return "{name}(title: '{title}', chapters: '{chapters}')".format(name=self.__class__.__name__, title=self.title, chapters=self.chapters)
+        return f"{self.__class__.__name_}(title: '{self.title}', chapters: '{self.chapters}')"

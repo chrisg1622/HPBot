@@ -1,16 +1,16 @@
 import numpy as np
 import tensorflow as tf
 from tensorflow.python import keras
-from hpbot.store.novel_sequence_generator import NovelSequenceGenerator
+from language_model.store.novel_sequence_generator import NovelSequenceGenerator
 
 
-class HPBot(keras.Model):
+class LanguageModel(keras.Model):
 
     START_TOKEN = NovelSequenceGenerator.START_TOKEN
     END_TOKEN = NovelSequenceGenerator.END_TOKEN
 
     def __init__(self, encoder, *args, **kwargs):
-        super(HPBot, self).__init__(*args, **kwargs)
+        super(LanguageModel, self).__init__(*args, **kwargs)
         self.encoder = encoder
         self._vocabulary = None
 
