@@ -4,8 +4,8 @@ import os
 import sys
 import numpy as np
 import tensorflow as tf
-sys.path.insert(0, '../../')
 from tensorflow.python import keras
+sys.path.insert(0, '../../')
 from language_model.model.spacy_tokenizer import SpacyTokenizer
 from language_model.model.encoder import Encoder
 from language_model.model.language_model import LanguageModel
