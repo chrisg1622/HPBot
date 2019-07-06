@@ -6,7 +6,7 @@ class CustomLoss(keras.losses.Loss):
 
     def __init__(self):
         super(CustomLoss, self).__init__()
-        self.loss = keras.losses.SparseCategoricalCrossentropy(from_logits=False, reduction=tf.keras.losses.Reduction.NONE, name='SparseCategoricalCrossEntropy')
+        self.loss = tf.losses.SparseCategoricalCrossentropy(from_logits=False, reduction=tf.losses.Reduction.NONE, name='SparseCategoricalCrossEntropy')
 
     def call(self, y_true, y_pred):
         sentence_token_mask = tf.cast(tf.reduce_all(tf.greater(y_pred, 0.0), axis=2), dtype=tf.float32)

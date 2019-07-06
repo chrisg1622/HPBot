@@ -9,7 +9,7 @@ from tensorflow.python import keras
 from language_model.model.spacy_tokenizer import SpacyTokenizer
 from language_model.model.encoder import Encoder
 from language_model.model.language_model import LanguageModel
-from language_model.model.custom_loss import CustomLoss
+from language_model.model.losses.custom_loss import CustomLoss
 from language_model.model.callbacks.sequence_sampling import SequenceSamplingCallback
 from language_model.model.callbacks.model_checkpoint import ModelCheckpointCallback
 from language_model.model.logger import Logger
