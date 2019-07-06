@@ -23,8 +23,8 @@ class NovelSequenceGenerator:
         return self.get_token_ngrams(tokens=tokens, n=n)
 
     def get_chapter_tokens(self, chapter, with_title=True):
-        title_tokens = self.tokenizer.tokenize(chapter.title) if with_title else []
-        return title_tokens + self.tokenizer.tokenize(chapter.text)
+        title_tokens = self.tokenizer.get_tokens(chapter.title) if with_title else []
+        return title_tokens + self.tokenizer.get_tokens(chapter.text)
 
     def get_chapter_sentence_tokens(self, chapter, with_title=True, pad_tokens=True):
         title_sentence_tokens = self.tokenizer.get_sentence_tokens(chapter.title) if with_title else []
