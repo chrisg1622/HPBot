@@ -13,8 +13,9 @@ class GetNovelSentenceTokens(Task):
 
     def run(self):
         sentence_tokens = []
-        for filePath in glob.glob(pathname=f'{self.base_directory}/*.txt'):
+        for filePath in sorted(glob.glob(pathname=f'{self.base_directory}/*.txt')):
             novel = self.novel_retriever.get_novel(filePath=filePath)
+            self.log(f'Processing {novel.title}')
             sentence_tokens.append(self.tokenizer.get_tokens(text=novel.title))
             for chapter in novel.chapters:
                 sentence_tokens.append(self.tokenizer.get_tokens(text=chapter.title))

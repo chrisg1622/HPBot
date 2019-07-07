@@ -1,5 +1,6 @@
 import fire
 import sys
+from prefect.utilities.debug import raise_on_exception
 sys.path.insert(0, '../../')
 from language_model.model.tasks.get_novel_sentence_tokens import GetNovelSentenceTokens
 from language_model.model.tasks.train_word2vec_embeddings import TrainWord2VecEmbeddings
@@ -24,8 +25,9 @@ def main(base_directory):
     flow.add_task(task=get_novel_sentence_tokens)
     flow.add_task(task=train_word2vec_embeddings)
     train_word2vec_embeddings.set_upstream(task=get_novel_sentence_tokens, flow=flow)
-    train_word2vec_embeddings.bind(sentence_tokens=get_novel_sentence_tokens)
-    flow.run()
+    train_word2vec_embeddings.bind(sentence_tokens=get_novel_sentence_tokens, flow=flow)
+    with raise_on_exception():
+        flow.run()
 
 
 if __name__ == '__main__':
