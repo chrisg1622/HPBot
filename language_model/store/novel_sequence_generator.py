@@ -57,7 +57,7 @@ class NovelSequenceGenerator:
         sequences = sum([self.get_novel_ngrams(novel, n=n+1) for novel in novels], [])
         return np.array([ngram[:n] for ngram in sequences]), np.array([ngram[n] for ngram in sequences])
 
-    def get_novels_sentence_tokens(self, novels, pad_tokens=True):
+    def get_sentence_tokens_from_novels(self, novels, pad_tokens=True):
         return sum([self.get_novel_sentence_tokens(novel=novel, pad_tokens=pad_tokens) for novel in novels], [])
 
     def _pad_sentence(self, sentence, max_size, padding=''):

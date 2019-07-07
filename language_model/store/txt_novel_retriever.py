@@ -5,7 +5,7 @@ from language_model.data.novel import Novel
 class TxtNovelRetriever:
 
     @staticmethod
-    def retrieve_novel(filePath):
+    def get_novel(filePath):
         lines = []
         with open(filePath, 'r') as f:
             for line in f.readlines():
