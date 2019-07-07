@@ -25,6 +25,7 @@ def main(base_directory):
     flow.add_task(task=train_word2vec_embeddings)
     train_word2vec_embeddings.set_upstream(task=get_novel_sentence_tokens, flow=flow)
     train_word2vec_embeddings.bind(sentence_tokens=get_novel_sentence_tokens)
+    flow.run()
 
 
 if __name__ == '__main__':
