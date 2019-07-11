@@ -21,6 +21,7 @@ class GetNovelSentenceTokens(Task):
                 sentence_tokens.append(self.tokenizer.get_tokens(text=chapter.title))
                 sentence_tokens.extend(self.tokenizer.get_sentence_tokens(text=chapter.text))
         vocab = sorted({x for sentence in sentence_tokens for x in sentence})
+        self.log(f'Saving {len(sentence_tokens)} with a total of {len(vocab)} words')
         json.dump(vocab, open(f'{self.base_directory}/vocabulary.json', 'w'))
         json.dump(sentence_tokens, open(f'{self.base_directory}/all_novels_sentence_tokens.json', 'w'))
         return sentence_tokens
