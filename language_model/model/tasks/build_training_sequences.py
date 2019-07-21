@@ -1,27 +1,22 @@
-import glob
 import json
+import gzip
+from tqdm import tqdm
+from language_model.data.training_sequence import TrainingSequence
 from language_model.model.tasks.task import Task
 
 
-class GetNovelSentenceTokens(Task):
+class BuildTrainingSequences(Task):
 
-    def __init__(self, base_directory, novel_retriever, tokenizer):
-        super().__init__()
-        self.base_directory = base_directory
-        self.novel_retriever = novel_retriever
-        self.tokenizer = tokenizer
+    TRAINING_SEQUENCES_FILE_NAME = 'training_sequences.gz'
 
-    def run(self):
-        sentence_tokens = []
-        for filePath in sorted(glob.glob(pathname=f'{self.base_directory}/*.txt')):
-            novel = self.novel_retriever.get_novel(filePath=filePath)
-            self.log(f'Processing {novel.title}')
-            sentence_tokens.append(self.tokenizer.get_tokens(text=novel.title))
-            for chapter in novel.chapters:
-                sentence_tokens.append(self.tokenizer.get_tokens(text=chapter.title))
-                sentence_tokens.extend(self.tokenizer.get_sentence_tokens(text=chapter.text))
-        vocab = sorted({x for sentence in sentence_tokens for x in sentence})
-        self.log(f'Saving {len(sentence_tokens)} with a total of {len(vocab)} words')
-        json.dump(vocab, open(f'{self.base_directory}/vocabulary.json', 'w'))
-        json.dump(sentence_tokens, open(f'{self.base_directory}/all_novels_sentence_tokens.json', 'w'))
-        return sentence_tokens
+    def __init__(self, base_directory):
+        super().__init__(base_directory=base_directory)
+
+    def run(self, sentence_tokens):
+        with gzip.open(f'{self.base_directory}/{self.TRAINING_SEQUENCES_FILE_NAME}', 'wt') as output_file:
+            for tokens in tqdm(sentence_tokens, desc=self.__class__.__name__):
+                if len(tokens) <= 1:
+                    continue
+                for target_index, target_token in enumerate(tokens, start=1):
+                    training_sequence = TrainingSequence(tokens=tokens[:target_index], target_token=target_token)
+                    output_file.write(json.dumps(training_sequence.to_json()))
