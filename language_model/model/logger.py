@@ -3,7 +3,11 @@ import logging
 
 class Logger(object):
 
-    def __init__(self, name='logger', file_path=None, level=logging.DEBUG):
+    def __init__(self, name='logger', file_path=None, level=logging.INFO):
+        self.name = name
+        self.file_path = file_path
+        self.level = level
+
         self.logger = logging.getLogger(name)
         self.logger.setLevel(level)
         if file_path is not None:
