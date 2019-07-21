@@ -20,23 +20,22 @@ from language_model.store.novel_sequence_generator import NovelSequenceGenerator
 txt_novel_retriever = TxtNovelRetriever()
 spacy_tokenizer = SpacyTokenizer()
 sequence_generator = NovelSequenceGenerator(tokenizer=spacy_tokenizer)
-repository_path = os.environ.get('HPBOT_ROOT', '/Users/cgeorge/Git/HPBot')
+base_directory = os.environ.get('HPBOT_ROOT', '/Users/cgeorge/Git/HPBot')
 model_name = 'HPBot'
 optimizer = tf.optimizers.Adam(learning_rate=0.007)
 loss_function = CustomLoss()
 metrics = []
-logger = Logger(name='HPBot', file_path=f'{repository_path}/training.log')
+logger = Logger(name='HPBot', file_path=f'{base_directory}/training.log')
 
-save_dir = f'{repository_path}/models/hpbot'
-tensorboard_dir = f'{repository_path}/tensorboard/global'
-vocabulary = json.load(open(f'{repository_path}/models/word2vec_vocab.json'))
-embeddings = np.load(f'{repository_path}/models/word2vec_vectors.npy')
+save_dir = f'{base_directory}/models/hpbot'
+tensorboard_dir = f'{base_directory}/tensorboard/global'
+vocabulary = json.load(open(f'{base_directory}/data/word2vec_vocab.json'))
+embeddings = np.load(f'{base_directory}/data/word2vec_vectors.npy')
 
 
 def main(batch_size=128, epochs=30, batches_per_epoch=None, restore_model=True):
-    sentence_tokens = json.load(open(f'{repository_path}/data/sentence_tokens.json', 'r'))
-    encoder = Encoder(vocabulary=vocabulary, hidden_size=512, pretrained_embeddings=embeddings)
-    hp_bot = LanguageModel(encoder=encoder)
+    sentence_tokens = json.load(open(f'{base_directory}/data/sentence_tokens.json', 'r'))
+    hp_bot = LanguageModel(encoder=Encoder(vocabulary=vocabulary, hidden_size=512, pretrained_embeddings=embeddings))
     input_generator = sequence_generator.get_training_sequence_generator(sentence_tokens=sentence_tokens, target_wrapper_fn=hp_bot.get_sentence_token_indices)
     hp_bot.compile(optimizer=optimizer, loss=loss_function, metrics=metrics)
     _ = hp_bot(np.array([['', '', '']]))
