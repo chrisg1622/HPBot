@@ -12,3 +12,12 @@ class Task(PrefectTask):
 
     def log(self, message):
         self.logger.info(msg=message)
+
+    def _run(self):
+        raise NotImplementedError('Task must implement _run')
+
+    def run(self, **kwargs):
+        self.log(f'Starting {self.name} task')
+        outputs = self._run(**kwargs)
+        self.log(f'Finished {self.name} task')
+        return outputs

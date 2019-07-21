@@ -19,7 +19,7 @@ class GetNovelSentenceTokens(Task):
     def pad_tokens(tokens):
         return [START_TOKEN] + tokens + [EOS_TOKEN]
 
-    def run(self):
+    def _run(self):
         sentence_tokens = []
         for filePath in sorted(glob.glob(pathname=f'{self.base_directory}/*.txt')):
             novel = self.novel_retriever.get_novel(filePath=filePath)

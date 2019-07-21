@@ -13,7 +13,7 @@ class BuildTrainingSequences(Task):
     def __init__(self, base_directory):
         super().__init__(base_directory=base_directory)
 
-    def run(self, sentence_tokens):
+    def _run(self, sentence_tokens):
         np.random.shuffle(sentence_tokens)
         with gzip.open(f'{self.base_directory}/{self.TRAINING_SEQUENCES_FILE_NAME}', 'wt') as output_file:
             for tokens in tqdm(sentence_tokens, desc=self.__class__.__name__):
