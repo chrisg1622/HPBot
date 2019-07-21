@@ -1,60 +1,21 @@
 import fire
-import json
-import os
 import sys
-import numpy as np
-import tensorflow as tf
-from tensorflow.python import keras
 sys.path.insert(0, '../../')
-from language_model.model.spacy_tokenizer import SpacyTokenizer
-from language_model.model.encoder import Encoder
-from language_model.model.language_model import LanguageModel
-from language_model.model.losses.custom_loss import CustomLoss
-from language_model.model.callbacks.sequence_sampling import SequenceSamplingCallback
-from language_model.model.callbacks.model_checkpoint import ModelCheckpointCallback
-from language_model.model.logger import Logger
-from language_model.store.txt_novel_retriever import TxtNovelRetriever
-from language_model.store.novel_sequence_generator import NovelSequenceGenerator
+from language_model.model.tasks.train_language_model import TrainLanguageModel
 
 
-txt_novel_retriever = TxtNovelRetriever()
-spacy_tokenizer = SpacyTokenizer()
-sequence_generator = NovelSequenceGenerator(tokenizer=spacy_tokenizer)
-base_directory = os.environ.get('HPBOT_ROOT', '/Users/cgeorge/Git/HPBot')
-model_name = 'HPBot'
-optimizer = tf.optimizers.Adam(learning_rate=0.007)
-loss_function = CustomLoss()
-metrics = []
-logger = Logger(name='HPBot', file_path=f'{base_directory}/training.log')
-
-save_dir = f'{base_directory}/models/hpbot'
-tensorboard_dir = f'{base_directory}/tensorboard/global'
-vocabulary = json.load(open(f'{base_directory}/data/word2vec_vocab.json'))
-embeddings = np.load(f'{base_directory}/data/word2vec_vectors.npy')
-
-
-def main(batch_size=128, epochs=30, batches_per_epoch=None, restore_model=True):
-    sentence_tokens = json.load(open(f'{base_directory}/data/sentence_tokens.json', 'r'))
-    hp_bot = LanguageModel(encoder=Encoder(vocabulary=vocabulary, hidden_size=512, pretrained_embeddings=embeddings))
-    input_generator = sequence_generator.get_training_sequence_generator(sentence_tokens=sentence_tokens, target_wrapper_fn=hp_bot.get_sentence_token_indices)
-    hp_bot.compile(optimizer=optimizer, loss=loss_function, metrics=metrics)
-    _ = hp_bot(np.array([['', '', '']]))
-    if restore_model:
-        hp_bot.load_weights(filepath=f'{save_dir}/{model_name}.h5')
-    callbacks = [
-        ModelCheckpointCallback(model_directory=save_dir, model_name=model_name, as_pickle=True, verbose=1),
-        keras.callbacks.TensorBoard(log_dir=tensorboard_dir, write_graph=True, update_freq='batch', profile_batch=False),
-        SequenceSamplingCallback(max_sequence_length=30, greedy_sequence=False, name='non-greedy sample', logger=logger),
-        SequenceSamplingCallback(max_sequence_length=30, greedy_sequence=True, name='greedy sample', logger=logger)
-    ]
-    batches_per_epoch = batches_per_epoch or len(sentence_tokens) // batch_size
-    hp_bot.fit(
-        x=input_generator,
-        batch_size=batch_size,
-        epochs=epochs,
-        steps_per_epoch=batches_per_epoch,
-        workers=0,
-        callbacks=callbacks
+def main(base_directory, model_name, restore_model=True):
+    trainLanguageModel = TrainLanguageModel(
+        base_directory=base_directory,
+        model_name=model_name,
+        hidden_size=512,
+        restore_model=restore_model
+    )
+    trainLanguageModel.run(
+        batch_size=128,
+        learning_rate=0.0001,
+        epochs=30,
+        batches_per_epoch=100
     )
 
 

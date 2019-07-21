@@ -1,13 +1,11 @@
 import numpy as np
 import tensorflow as tf
 from tensorflow.python import keras
-from language_model.store.novel_sequence_generator import NovelSequenceGenerator
+from language_model.data.constants import START_TOKEN
+from language_model.data.constants import EOS_TOKEN
 
 
 class LanguageModel(keras.Model):
-
-    START_TOKEN = NovelSequenceGenerator.START_TOKEN
-    END_TOKEN = NovelSequenceGenerator.END_TOKEN
 
     def __init__(self, encoder, *args, **kwargs):
         super(LanguageModel, self).__init__(*args, **kwargs)
@@ -20,12 +18,12 @@ class LanguageModel(keras.Model):
             self._vocabulary = {term: ind for ind, term in enumerate(self.encoder.vocabulary)}
         return self._vocabulary
 
-    def call(self, inputs, *args, **kwargs):
-        return self.encoder(inputs)
+    def call(self, sentence_tokens, *args, **kwargs):
+        return self.encoder(inputs=sentence_tokens)
 
     def sample_next_word(self, tokens, top_k=3, greedy=False):
-        sentence_token_softmaxed_logits = self.call(inputs=np.array([tokens]), training=False)
-        top_logits, top_indices = tf.math.top_k(input=sentence_token_softmaxed_logits[0, -1, :], k=top_k)
+        sentence_token_softmaxed_logits = self.call(sentence_tokens=np.array([tokens]), training=False)
+        top_logits, top_indices = tf.math.top_k(input=sentence_token_softmaxed_logits[0, :], k=top_k)
         if greedy:
             return self.encoder.vocabulary[top_indices[0].numpy()]
         softmaxed_top_values = tf.nn.softmax(logits=top_logits)
@@ -42,18 +40,19 @@ class LanguageModel(keras.Model):
         ])
 
     def sample_sequence(self, words=None, greedy=False, max_sample_length=50, top_k=3):
-        sample = words or [self.START_TOKEN]
+        sample = words or [START_TOKEN]
         last_word = sample[-1]
-        while last_word != self.END_TOKEN:
+        while last_word != EOS_TOKEN:
             last_word = self.sample_next_word(tokens=sample, greedy=greedy, top_k=top_k)
             sample.append(last_word)
             if len(sample) == max_sample_length:
                 break
         return self.format_sequence(sample)
 
-    def format_sequence(self, sequence):
-        if self.START_TOKEN in sequence:
-            sequence.remove(self.START_TOKEN)
+    @staticmethod
+    def format_sequence(sequence):
+        if START_TOKEN in sequence:
+            sequence.remove(START_TOKEN)
         formatted_sequence = sequence[0]
         for token in sequence[1:]:
             last_char = formatted_sequence[-1]
