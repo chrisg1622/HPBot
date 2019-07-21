@@ -19,6 +19,6 @@ class BuildTrainingSequences(Task):
             for tokens in tqdm(sentence_tokens, desc=self.__class__.__name__):
                 if len(tokens) <= 1:
                     continue
-                for target_index, target_token in enumerate(tokens, start=1):
+                for target_index, target_token in enumerate(tokens[1:], start=1):
                     training_sequence = TrainingSequence(tokens=tokens[:target_index], target_token=target_token)
-                    output_file.write(json.dumps(training_sequence.to_json()))
+                    output_file.write(json.dumps(training_sequence.to_json()) + '\n')
