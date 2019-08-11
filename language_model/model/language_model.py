@@ -30,15 +30,6 @@ class LanguageModel(keras.Model):
         top_words = [self.encoder.vocabulary[k] for k in top_indices.numpy()]
         return np.random.choice(top_words, size=1, p=softmaxed_top_values.numpy())[0]
 
-    def get_target_indices(self, tokens):
-        return np.array([self.vocabulary.get(tok, 0) for tok in tokens])
-
-    def get_sentence_token_indices(self, sentence_tokens):
-        return np.array([
-            [self.vocabulary.get(tok, 0) for tok in sentence]
-            for sentence in sentence_tokens
-        ])
-
     def sample_sequence(self, words=None, greedy=False, max_sample_length=50, top_k=3):
         sample = words or [START_TOKEN]
         last_word = sample[-1]
