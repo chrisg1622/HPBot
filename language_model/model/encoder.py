@@ -28,7 +28,7 @@ class Encoder(keras.layers.Layer):
         self.lstm = keras.layers.LSTM(units=self.hidden_size, return_sequences=False, dropout=self.dropout, name='lstm')
         self.output_layer = keras.layers.Dense(
             units=len(self.vocabulary),
-            use_bias=True,
+            use_bias=False,
             activation='softmax',
             kernel_regularizer=keras.regularizers.l2(l=self.regularizer)
         )

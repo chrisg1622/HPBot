@@ -39,8 +39,7 @@ class TrainLanguageModel(Task):
         if self.restore_model:
             hp_bot.load_weights(filepath=f'{self.base_directory}/{self.model_name}.h5')
         hp_bot.fit(
-            x=training_sequence_retriever.get_generator(),
-            batch_size=batch_size,
+            x=training_sequence_retriever.get_batched_generator(batch_size=batch_size),
             epochs=epochs,
             steps_per_epoch=batches_per_epoch,
             workers=0,
